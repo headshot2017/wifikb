@@ -61,8 +61,9 @@ def main():
     sv = ()
     while 1:
         try:
-            udp.sendto("\xff\xff\xff\xff", server) # find the DS server
+            udp.sendto(b"\xff\xff\xff\xff", server) # find the DS server
             data, sv = udp.recvfrom(4096)
+            data = data.decode("utf8")
             break
         except: pass
 
@@ -78,7 +79,9 @@ def main():
     listener.start()
 
     while 1:
-        try: data, sv = udp.recvfrom(4096)
+        try:
+            data, sv = udp.recvfrom(4096)
+            data = data.decode("utf8")
         except: continue
 
         if server != sv: continue
