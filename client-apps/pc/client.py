@@ -8,6 +8,11 @@ import random
 
 from pynput.keyboard import Key, Listener
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 # https://github.com/blocksds/libnds/blob/master/include/nds/arm9/keyboard.h#L94
 ndsKeyCode = {
     Key.esc:       -23,
@@ -54,7 +59,18 @@ def onPress(key):
 def main():
     global server, udp
     udp.settimeout(1)
-    udp.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+    option = 0
+    print("wifikb client\nChoose an option:\n1. Find DS automatically\n2. Enter IP address")
+    while option == 0:
+        try: option = int(input("> "))
+        except: pass
+        if option < 1 or option > 2: option = 0
+
+    if option == 1:
+        udp.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    else:
+        server = (input("Enter the IP address of your DS\n> "), 9091)
 
     print("Waiting for server response...\nIf nothing happens restart the program or check your DS")
     data = ""
