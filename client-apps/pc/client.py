@@ -44,16 +44,13 @@ def onPress(key):
     if server == ("255.255.255.255", 9091): return
 
     keyCode = ndsKeyCode[key] if key in ndsKeyCode else -1
-    asciiCode = 0
-    try:
-        asciiCode = ord(key.char)
-    except:
-        pass
-    if keyCode > 0:
-        asciiCode = keyCode
-        keyCode = -1
+    if keyCode == -1:
+        try:
+            keyCode = ord(key.char)
+        except:
+            return
 
-    data = struct.pack("<hH", keyCode, asciiCode)
+    data = struct.pack("<i", keyCode)
     udp.sendto(data, server)
 
 def main():
@@ -61,35 +58,49 @@ def main():
     udp.settimeout(1)
 
     option = 0
-    print("wifikb client\nChoose an option:\n1. Find DS automatically\n2. Enter IP address")
+    print("wifikb client\nChoose an option:\n1. Find DS automatically\n2. Enter IP address\n3. Reverse connection mode (for emulators)")
     while option == 0:
         try: option = int(input("> "))
         except: pass
-        if option < 1 or option > 2: option = 0
+        if option < 1 or option > 3: option = 0
 
     if option == 1:
         udp.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    else:
+    elif option == 2:
         server = (input("Enter the IP address of your DS\n> "), 9091)
+    elif option == 3:
+        udp.bind(("0.0.0.0", 9091))
+        print("Waiting for broadcast message from the DS...\nIf nothing happens restart the program or check your DS")
+        while 1:
+            try:
+                data, sv = udp.recvfrom(4096)
+                if data == b"\xff\xff\xff\xff":
+                    server = sv
+                    print("Found DS server at {0}".format(server))
+                    udp.sendto(b"\xff\xff\xff\xff", server)
+                    break
+            except:
+                pass
 
-    print("Waiting for server response...\nIf nothing happens restart the program or check your DS")
-    data = ""
-    sv = ()
-    while 1:
-        try:
-            udp.sendto(b"\xff\xff\xff\xff", server) # find the DS server
-            data, sv = udp.recvfrom(4096)
-            data = data.decode("utf8")
-            break
-        except: pass
+    if option < 3:
+        print("Waiting for server response...\nIf nothing happens restart the program or check your DS")
+        data = ""
+        sv = ()
+        while 1:
+            try:
+                if option != 3: udp.sendto(b"\xff\xff\xff\xff", server) # find the DS server
+                data, sv = udp.recvfrom(4096)
+                data = data.decode("utf8")
+                break
+            except: pass
 
-    if data.startswith("wifikb"):
-        server = sv
-        print("Found DS server at {0}".format(server))
-        print(data)
-    else:
-        print("Server not found (unexpected response from {0}: '{1}')".format(sv, data))
-        return
+        if data.startswith("wifikb"):
+            server = sv
+            print("Found DS server at {0}".format(server))
+            print(data)
+        else:
+            print("Server not found (unexpected response from {0}: '{1}')".format(sv, data))
+            return
 
     listener = Listener(on_press=onPress)
     listener.start()

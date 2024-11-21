@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 	}
 
 	consoleSelect(&bottomScreen);
+	wifikb::setReverse(true);
 	wifikb::init();
 
 	wifikb::start();
@@ -63,9 +64,9 @@ int main(int argc, char *argv[])
 		swiWaitForVBlank();
 		wifikb::update();
 
-		wifikb::KeyStruct key;
-		if (wifikb::getKey(&key))
-			printf("%c", key.asciiCode);
+		s32 key;
+		if (wifikb::getKey(&key) && key >= 0)
+			printf("%c", key);
 	}
 
 	return 0;
