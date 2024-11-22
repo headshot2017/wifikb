@@ -76,7 +76,7 @@ def main():
                 data, sv = udp.recvfrom(4096)
                 if data == b"\xff\xff\xff\xff":
                     server = sv
-                    print("Found DS server at {0}".format(server))
+                    print("Found DS at {0}".format(server))
                     udp.sendto(b"\xff\xff\xff\xff", server)
                     break
             except:
@@ -96,7 +96,7 @@ def main():
 
         if data.startswith("wifikb"):
             server = sv
-            print("Found DS server at {0}".format(server))
+            print("Found DS at {0}".format(server))
             print(data)
         else:
             print("Server not found (unexpected response from {0}: '{1}')".format(sv, data))
