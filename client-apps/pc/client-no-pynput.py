@@ -62,7 +62,7 @@ def main():
         sv = ()
         while 1:
             try:
-                if option != 3: udp.sendto(b"\xff\xff\xff\xff", server) # find the DS server
+                udp.sendto(b"\xff\xff\xff\xff", server) # find the DS server
                 data, sv = udp.recvfrom(4096)
                 data = data.decode("utf8")
                 break
