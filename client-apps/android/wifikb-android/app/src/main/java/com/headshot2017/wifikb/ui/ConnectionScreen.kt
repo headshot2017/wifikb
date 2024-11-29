@@ -2,16 +2,22 @@ package com.headshot2017.wifikb.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.TextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +52,25 @@ fun ConnectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var text by remember { mutableStateOf("") }
+        val logState = rememberScrollState(0)
 
-        SelectionContainer {
-            Text(
-                text = uiState.textLog,
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
-            )
+        LaunchedEffect(uiState.textLog) {
+            logState.scrollTo(logState.maxValue)
+        }
+
+        Box(Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.85f)
+            .padding(horizontal = 20.dp)
+        ) {
+            SelectionContainer {
+                Text(
+                    text = uiState.textLog,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .verticalScroll(logState)
+                )
+            }
         }
 
         TextField(
@@ -59,7 +78,8 @@ fun ConnectionScreen(
             value = text,
             onValueChange = { text = it },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            enabled = viewModel.connected,
+            modifier = Modifier.fillMaxWidth().requiredHeight(100.dp).padding(20.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(
                 onSend = {
