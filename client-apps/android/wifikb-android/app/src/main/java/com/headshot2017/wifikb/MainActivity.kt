@@ -62,7 +62,7 @@ fun WifikbApp(
                     theViewModel
                 )
             }
-            composable(Routes.CONNECTION) { backStackEntry ->
+            composable(Routes.CONNECTION) {
                 ConnectionScreen(
                     navController,
                     Modifier.padding(innerPadding),
