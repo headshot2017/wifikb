@@ -23,9 +23,11 @@ class UDPViewModel : ViewModel() {
 
     private lateinit var socket: DatagramSocket
     private lateinit var addr: SocketAddress
-    private var connected: Boolean = false
     private var stop: Boolean = false
     private var udpJob: Job? = null
+
+    var connected: Boolean = false
+        private set
 
     private fun clearLog() {
         _uiState.update { currentState ->
