@@ -73,7 +73,7 @@ def main():
         print("Waiting for broadcast message from the DS...\nIf nothing happens restart the program or check your DS")
         while 1:
             try:
-                data, sv = udp.recvfrom(4096)
+                data, sv = udp.recvfrom(4)
                 if data == b"\xff\xff\xff\xff":
                     server = sv
                     print("Found DS at {0}".format(server))
